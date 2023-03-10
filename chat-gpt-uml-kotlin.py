@@ -2,6 +2,7 @@ import openai
 import json
 import tiktoken
 import os
+from halo import Halo
 
 openai.api_key = os.getenv("OPEN_AI_KEY")
 
@@ -189,38 +190,47 @@ def rule_set(package: str) -> str:
 
         Format the response into a JSON array with a structure [{"file_name": "file_name.kt", "file_path": "file_path", "content": "sample_content"}].
         The whole response should only be a valid JSON array and nothing else.
+        Do not create sample classes.
         **/
     """.replace("{package}", package)
 
 def code_gen(rule_set: str, prompt: str) -> str:
-    return """
+    return f"""
     {rule_set}
 
     {prompt}
-    """.format(rule_set = rule_set, prompt = prompt)
+    """
 
 def num_tokens_from_string(string: str, model: str) -> int:
     encoding = tiktoken.encoding_for_model(model)
     num_tokens = len(encoding.encode(string))
     return num_tokens
 
+rule_set = rule_set(package = "auth")
+
 prompt = code_gen(
-    rule_set = rule_set(package = "auth"),
+    rule_set = rule_set,
     prompt = """
-        create sign in fragment (F).
-        create sign in viewmodel (VM).
+        create sign in fragment (SIF).
+        create authentication viewmodel (AVM).
         create authentication repository (AR).
-        F --> VM
-        VM --> AR
+        create authentication service (AS).
+        SIF --> AVM
+        AVM --> AR
+        AR --> AS
     """
 )
 
 model = "text-davinci-003"
+max_request_tokens = 4097
 
 num_tokens = num_tokens_from_string(prompt, model)
-max_tokens = 4097 - num_tokens
+max_tokens = max_request_tokens - num_tokens
 
-print("MAX TOKENS: {0}".format(max_tokens))
+print(f"MAX TOKENS: {max_tokens}")
+
+spinner = Halo(text = "Generating Code", spinner = "dots")
+spinner.start()
 
 response = openai.Completion.create(
     model = model, 
@@ -228,6 +238,8 @@ response = openai.Completion.create(
     temperature = 0,
     max_tokens = max_tokens
 )
+
+spinner.stop()
 
 code_gen = json.loads(response["choices"][0]["text"])
 
