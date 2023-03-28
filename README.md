@@ -20,7 +20,9 @@ AVM --> NM
 AR --> AS
 ```
 
-to [this](output.png)
+to this
+
+![this](output.png)
 
 # Setup
 
@@ -44,6 +46,8 @@ Run any script with python
 ```console
 python chat-gpt-uml-kotlin-phase-1.py
 ```
+
+Follow the phases of prompt engineering to see how the output changes each time.
 
 # Phase 1
 Provide ChatGPT with code templates/samples for the classes that you want to generate. The key is to keep is very simple and avoid any proprietery code.
