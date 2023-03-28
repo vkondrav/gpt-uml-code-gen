@@ -5,9 +5,9 @@ In this proof of concept project we attempt to teach ChatGPT basic UML to genera
 The goal is to go from this
 
 ```
-create Some Fragment (SF)
-create Some View Model (SVM)
-create Some Repository (SR)
++ some fragment (SF)
++ some view model (SVM)
++ some repository (SR)
 SF --> SVM
 SF --> SR
 ```

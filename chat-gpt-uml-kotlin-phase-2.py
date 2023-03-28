@@ -157,9 +157,9 @@ def rule_set() -> str:
         Rules
         
         Create a class only if instructed to.
-        A class only has a dependency if stated otherwise no dependencies.
         Every class must be created with its test suite.
         If not one of fragment, viewmodel or repository create a sample class.
+        Assume a class has no dependencies unless explicitly stated.
 
         UML
         
@@ -169,6 +169,9 @@ def rule_set() -> str:
         --> denotes a dependency. 
         Example: sampleViewModel --> sampleRepository means sampleViewModel dependends on sampleRepository. 
         Example: sampleFragment --> sampleViewModel means sampleFragment uses sampleViewModel.
+
+        + denotes create command.
+        Example: + sample repoitory means create a sample repository
         **/
     """
 
@@ -187,10 +190,10 @@ def num_tokens_from_string(string: str, model: str) -> int:
 prompt = code_gen(
     rule_set = rule_set(),
     prompt = """
-        create sign in fragment (SIF).
-        create authentication viewmodel (AVM).
-        create authentication repository (AR).
-        create authentication service (AS).
+        + sign in fragment (SIF)
+        + authentication viewmodel (AVM)
+        + authentication repository (AR)
+        + authentication service (AS)
         SIF --> AVM
         AVM --> AR
         AR --> AS
