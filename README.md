@@ -5,14 +5,22 @@ In this proof of concept project we attempt to teach ChatGPT basic UML to genera
 The goal is to go from this
 
 ```
-+ some fragment (SF)
-+ some view model (SVM)
-+ some repository (SR)
-SF --> SVM
-SF --> SR
++ sign in fragment (SIF)
++ sign up fragment (SUF)
++ authentication viewmodel (AVM)
++ authentication repository (AR)
++ user repository (UR)
+- navigation manager (NM)
++ authentication service (AS)
+SIF --> AVM
+SUF --> AVM
+AVM --> AR
+AVM --> UR
+AVM --> NM
+AR --> AS
 ```
 
-to actual files with correct dependencies.
+to [this](output.png)
 
 # Setup
 
