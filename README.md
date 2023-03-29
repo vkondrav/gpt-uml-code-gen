@@ -2,7 +2,7 @@
 
 In this proof of concept project we attempt to teach ChatGPT basic UML to generate code, consume the output and create actual files in a project. The idea is for developers to provide a `schema` of sorts and for ChatGPT to generate some boilerplate code to avoid set up time.
 
-The goal is to go from this
+The goal is to go from this prompt
 
 ```
 + sign in fragment (SIF)
@@ -20,7 +20,7 @@ AVM --> NM
 AR --> AS
 ```
 
-to this
+to these files
 
 ![this](output.png)
 
