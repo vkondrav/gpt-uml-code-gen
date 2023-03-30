@@ -42,18 +42,13 @@ and use it here.
 openai.api_key = "<API_TOKEN>"
 ```
 
+Edit your training sample files [here](/samples)
+
+Edit the diagram [here](diagram)
+
 Run any script with python
 ```console
-python chat-gpt-uml-kotlin.py
+python chat-gpt-uml-kotlin.py --help
+
+python chat-gpt-uml-kotlin.py --package auth --diagram diagram --samples samples --debug
 ```
-
-Follow the phases of prompt engineering to see how the output changes each time.
-
-# Phase 1
-Provide ChatGPT with code templates/samples for the classes that you want to generate. The key is to keep is very simple and avoid any proprietery code.
-
-# Phase 2
-Provide ChatGPT with simple UML definitions which should allow us to prompt what we want very quickly and concisenly.
-
-# Phase 3
-Change the templates/samples to also provide file names and paths. Ask ChatGPT to format the response to JSON. Consume the JSON output and generate real files using basic python methods.
