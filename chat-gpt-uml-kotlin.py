@@ -3,233 +3,79 @@ import json
 import tiktoken
 import os
 from halo import Halo
+import argparse
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument("-p", "--package", type = str, required = True, help = "package to create")
+parser.add_argument("-s", "--samples", type = str, required = True, help = "path to sample files directory")
+parser.add_argument("-dm", "--diagram", type = str, required = True, help = "path to diagram")
+parser.add_argument("-d", "--debug", action = "store_true", help = "enable debug mode")
+
+args = parser.parse_args()
+
+package = args.package
+diagram_path = args.diagram
+samples_path = args.samples
+debug_mode = args.debug
 
 openai.api_key = os.getenv("OPEN_AI_KEY")
 
-def rule_set(package: str) -> str:
-    return """
-        // Kotlin
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
-        // Sample Fragment
-        // file_name: SampleFragment.kt
-        // file_path: src/main/java/com/client/{package}
-        package com.client.{package}
+with open(diagram_path, "r") as file:
+    diagram = file.read()
 
-        @AndroidEntryPoint
-        class SampleFragment : Fragment(R.layout.fragment_sample) {
-        
-            private val viewModel: SampleViewModel by viewModels()
+def get_sample_set(dir_path, rel_path = "", files_info = ""):
+    for filename in os.listdir(dir_path):
+        file_path = os.path.join(dir_path, filename)
+        if os.path.isdir(file_path):
+            files_info = get_sample_set(file_path, os.path.join(rel_path, filename), files_info)
+        elif os.path.isfile(file_path):
+            with open(file_path, "r") as file:
+                file_path = os.path.join(rel_path, filename).replace(filename, "")
+                files_info += f"//file_name: {filename}\n//file_path: {file_path}\n{file.read()}\n\n"
+    return files_info
 
-            private var viewBinding: FragmentSampleBinding? = null
+sample_set = get_sample_set(samples_path).replace("sample-package", package)
 
-            override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-                super.onViewCreated(view, savedInstanceState)
-                val binding = FragmentSampleBinding.bind(view)
-                fragmentBlankBinding = binding
-            }
+rules = """
+/**
+Rules
 
-            override fun onDestroyView() {
-                fragmentBlankBinding = null
-                super.onDestroyView()
-            }
-        }
+Every class must be created with its test suite.
+If not one of fragment, viewmodel or repository create a sample class.
+Assume a class has no dependencies unless explicitly stated.
 
-        // Sample Fragment Test Suite
-        // file_name: SampleFragmentTest.kt
-        // file_path: src/test/java/com/client/{package}
-        package com.client.{package}
+UML
 
-        @HiltAndroidTest
-        class SampleFragmentTest : BaseAndroidTest() {
+() denotes a shorthand. 
+Example: sampleRepository (SR) means SR now refers to sampleRepository.
 
-            @BindValue
-            @JvmField
-            internal val viewModel: SampleViewModel = mockk()
+--> denotes a dependency. 
+Example: sampleViewModel --> sampleRepository means sampleViewModel dependends on sampleRepository. 
+Example: sampleFragment --> sampleViewModel means sampleFragment uses sampleViewModel.
 
-            @Before
-            fun setUp() {
-                clearAllMocks()
-            }
++ denotes create command.
+Example: + sample repository means create a sample repository.
 
-            @Test
-            fun `placeholder test`() {
-                launchFragmentInContainer<SampleFragment>() { fragment ->
+- denotes that a class aleady exists and does not need to be created. it can however be a dependency.
 
-                }
-            }
-        }
+Format
 
-        // Sample ViewModel
-        // file_name: SampleViewModel.kt
-        // file_path: src/main/java/com/client/{package}
-        package com.client.{package}
+Format the response into a JSON array with a structure [{"file_name": "file_name.kt", "file_path": "file_path", "content": "sample_content"}].
+The whole response should only be a valid JSON array and nothing else.
+Do not create sample classes.
+**/
 
-        @HiltViewModel
-        internal class SampleViewModel @Inject constructor(
-            private val sampleDependency: SampleDependency,
-        ) : ViewModel() {
-        
-        }
+"""
 
-        // Sample ViewModel Test Suite
-        // file_name: SampleViewModelTest.kt
-        // file_path: src/test/java/com/client/{package}
-        package com.client.{package}
-
-        internal class SampleViewModelTest : BaseTest() {
-
-            private lateinit var subject: SampleViewModel
-
-            private val mockedSampleDependency: SampleDependency = mockk()
-
-            @Before
-            fun setUp() {
-                clearAllMocks()
-                subject = SampleViewModel(
-                    mockedSampleDependency
-                )
-            }
-
-            @Test
-            fun `placeholder test`() = runTest {
-            
-            }
-        }
-
-        // Sample Repository
-        // file_name: SampleRepository.kt
-        // file_path: src/main/java/com/client/{package}
-        package com.client.{package}
-
-        internal class SampleRepository @Inject constructor(
-            private val sampleDependency: SampleDependency,
-            private val dispatcher: CoroutineDispatcher,
-        ) {
-        
-        }
-
-        // Sample Repository Test Suite
-        // file_name: SampleRepositoryTest.kt
-        // file_path: src/test/java/com/client/{package}
-        package com.client.{package}
-
-        internal class SampleRepositoryTest : BaseTest() {
-
-            private lateinit var subject: SampleRepository
-
-            private val mockedSampleDependency: SampleDependency = mockk()
-
-            @Before
-            fun setUp() {
-                clearAllMocks()
-                subject = SampleRepository(
-                    mockedSampleDependency,
-                )
-            }
-
-            @Test
-            fun `placeholder test`() = runTest {
-            
-            }
-        }
-
-        // Sample Class
-        // file_name: SampleClass.kt
-        // file_path: src/main/java/com/client/{package}
-        package com.client.{package}
-
-        internal SampleClass @Inject constructor(
-            private val sampleDependency: SampleDependency
-        ) {
-        
-        }
-        
-        // Basic Class Test Suite
-        // file_name: BasicClassTest.kt
-        // file_path: src/test/java/com/client/{package}
-        package com.client.{package}
-
-        internal class BasicClassTest : BaseTest() {
-
-            private lateinit var subject: BasicClass
-
-            private val mockedSampleDependency: SampleDependency = mockk()
-
-            @Before
-            fun setUp() {
-                clearAllMocks()
-                subject = BasicClass(
-                    mockedSampleDependency,
-                )
-            }
-
-            @Test
-            fun `placeholder test`() = runTest {
-            
-            }
-        }
-
-        /**
-        Rules
-        
-        Every class must be created with its test suite.
-        If not one of fragment, viewmodel or repository create a sample class.
-        Assume a class has no dependencies unless explicitly stated.
-
-        UML
-        
-        () denotes a shorthand. 
-        Example: sampleRepository (SR) means SR now refers to sampleRepository.
-
-        --> denotes a dependency. 
-        Example: sampleViewModel --> sampleRepository means sampleViewModel dependends on sampleRepository. 
-        Example: sampleFragment --> sampleViewModel means sampleFragment uses sampleViewModel.
-
-        + denotes create command.
-        Example: + sample repoitory means create a sample repository.
-
-        - denotes that a class aleady exists and does not need to be created. it can however be a dependency.
-
-        Format
-
-        Format the response into a JSON array with a structure [{"file_name": "file_name.kt", "file_path": "file_path", "content": "sample_content"}].
-        The whole response should only be a valid JSON array and nothing else.
-        Do not create sample classes.
-        **/
-    """.replace("{package}", package)
-
-def code_gen(rule_set: str, prompt: str) -> str:
-    return f"""
-    {rule_set}
-
-    {prompt}
-    """
+prompt = "//Kotlin\n\n" + sample_set + rules + diagram
 
 def num_tokens_from_string(string: str, model: str) -> int:
     encoding = tiktoken.encoding_for_model(model)
     num_tokens = len(encoding.encode(string))
     return num_tokens
-
-rule_set = rule_set(package = "auth")
-
-prompt = code_gen(
-    rule_set = rule_set,
-    prompt = """
-        + sign in fragment (SIF)
-        + sign up fragment (SUF)
-        + authentication viewmodel (AVM)
-        + authentication repository (AR)
-        + user repository (UR)
-        - navigation manager (NM)
-        + authentication service (AS)
-        SIF --> AVM
-        SUF --> AVM
-        AVM --> AR
-        AVM --> UR
-        AVM --> NM
-        AR --> AS
-    """
-)
 
 model = "text-davinci-003"
 max_request_tokens = 4097
@@ -237,7 +83,11 @@ max_request_tokens = 4097
 num_tokens = num_tokens_from_string(prompt, model)
 max_tokens = max_request_tokens - num_tokens
 
-print(f"MAX TOKENS: {max_tokens}")
+if debug_mode:
+    print(f"MAX TOKENS: {max_tokens}")
+
+if debug_mode:
+    print(prompt)
 
 spinner = Halo(text = "Generating Code", spinner = "dots")
 spinner.start()
@@ -253,7 +103,8 @@ spinner.stop()
 
 code_gen = json.loads(response["choices"][0]["text"])
 
-print(json.dumps(code_gen, indent = 4))
+if debug_mode:
+    print(json.dumps(code_gen, indent = 4))
 
 for file in code_gen:
 
@@ -264,4 +115,4 @@ for file in code_gen:
         os.makedirs(path)
 
     with open(path + "/" + name, 'w+') as f:
-        print(file["content"], file=f)
+        print(file["content"], file = f)

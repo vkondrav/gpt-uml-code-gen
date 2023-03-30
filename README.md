@@ -44,7 +44,7 @@ openai.api_key = "<API_TOKEN>"
 
 Run any script with python
 ```console
-python chat-gpt-uml-kotlin-phase-1.py
+python chat-gpt-uml-kotlin.py
 ```
 
 Follow the phases of prompt engineering to see how the output changes each time.
