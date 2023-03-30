@@ -2,7 +2,7 @@
 
 In this proof of concept project we attempt to teach ChatGPT basic UML to generate code, consume the output and create actual files in a project. The idea is for developers to provide a `schema` of sorts and for ChatGPT to generate some boilerplate code to avoid set up time.
 
-The goal is to go from this
+The goal is to go from this prompt
 
 ```
 + sign in fragment (SIF)
@@ -20,7 +20,9 @@ AVM --> NM
 AR --> AS
 ```
 
-to [this](output.png)
+to these files
+
+![this](output.png)
 
 # Setup
 
@@ -44,6 +46,8 @@ Run any script with python
 ```console
 python chat-gpt-uml-kotlin-phase-1.py
 ```
+
+Follow the phases of prompt engineering to see how the output changes each time.
 
 # Phase 1
 Provide ChatGPT with code templates/samples for the classes that you want to generate. The key is to keep is very simple and avoid any proprietery code.
