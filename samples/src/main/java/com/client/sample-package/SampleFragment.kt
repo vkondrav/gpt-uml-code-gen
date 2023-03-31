@@ -9,12 +9,11 @@ class SampleFragment : Fragment(R.layout.fragment_sample) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val binding = FragmentSampleBinding.bind(view)
-        viewBinding = binding
+        viewBinding = FragmentSampleBinding.bind(view)
     }
 
     override fun onDestroyView() {
-        fragmentBlankBinding = null
+        viewBinding = null
         super.onDestroyView()
     }
 }

@@ -48,7 +48,5 @@ Edit the diagram [here](diagram)
 
 Run any script with python
 ```console
-python chat-gpt-uml-kotlin.py --help
-
 python chat-gpt-uml-kotlin.py --package auth --diagram diagram --samples samples --debug
 ```
