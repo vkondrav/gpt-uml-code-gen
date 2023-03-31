@@ -8,8 +8,8 @@ import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument("-p", "--package", type = str, required = True, help = "package to create")
-parser.add_argument("-s", "--samples", type = str, required = True, help = "path to sample files directory")
-parser.add_argument("-dm", "--diagram", type = str, required = True, help = "path to diagram")
+parser.add_argument("-s", "--samples", type = str, default = "samples", help = "path to sample files directory")
+parser.add_argument("-dm", "--diagram", type = str, default = "diagram", help = "path to diagram")
 parser.add_argument("-d", "--debug", action = "store_true", help = "enable debug mode")
 
 args = parser.parse_args()

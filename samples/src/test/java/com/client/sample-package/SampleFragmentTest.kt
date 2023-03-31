@@ -1,4 +1,4 @@
- package com.client.sample-package
+package com.client.sample-package
 
 @HiltAndroidTest
 class SampleFragmentTest : BaseAndroidTest() {
