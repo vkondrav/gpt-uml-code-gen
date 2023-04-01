@@ -1,15 +1,15 @@
 package com.client.sample-package
 
-class BasicClassTest : BaseTest() {
+class SampleClassTest : BaseTest() {
 
-    private lateinit var subject: BasicClass
+    private lateinit var subject: SampleClass
 
     private val mockedSampleDependency: SampleDependency = mockk()
 
     @Before
     fun setUp() {
         clearAllMocks()
-        subject = BasicClass(
+        subject = SampleClass(
             mockedSampleDependency,
         )
     }

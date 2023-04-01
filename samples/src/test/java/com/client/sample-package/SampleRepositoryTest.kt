@@ -1,4 +1,4 @@
-package com.client.{package}
+package com.client.sample-package
 
 class SampleRepositoryTest : BaseTest() {
 

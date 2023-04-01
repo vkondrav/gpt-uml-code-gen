@@ -1,6 +1,6 @@
 package com.client.sample-package
 
-internal class SampleViewModelTest : BaseTest() {
+class SampleViewModelTest : BaseTest() {
 
     private lateinit var subject: SampleViewModel
 

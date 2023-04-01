@@ -40,16 +40,17 @@ def get_sample_set(dir_path, rel_path = "", files_info = ""):
 sample_set = get_sample_set(samples_path).replace("sample-package", package)
 
 rules = """
-/**
-Rules
+Koltin File Generator
 
-Every class must be created with its test suite.
+You are a code genetating machince. I will provide you with a set of sample classes and a diagram and you will output files.
+If I ask for a class to be created you must also create its test class.
 If not one of fragment, viewmodel or repository create a sample class.
 Assume a class has no dependencies unless explicitly stated.
+Do not create sample classes.
+Do not create a class unless specificaified by the diagram.
+Do not add to the diagram.
 
-UML
-
-() denotes a shorthand. 
+() denotes a shorthand.
 Example: sampleRepository (SR) means SR now refers to sampleRepository.
 
 --> denotes a dependency. 
@@ -61,16 +62,11 @@ Example: + sample repository means create a sample repository.
 
 - denotes that a class aleady exists and does not need to be created. it can however be a dependency.
 
-Format
-
 Format the response into a JSON array with a structure [{"file_name": "file_name.kt", "file_path": "file_path", "content": "sample_content"}].
-The whole response should only be a valid JSON array and nothing else.
-Do not create sample classes.
-**/
-
+Your response should only be a valid JSON array string and no other characters.
 """
 
-prompt = "//Kotlin\n\n" + sample_set + rules + "Create classes from the following diagram\n\n" + diagram
+prompt = rules + sample_set + diagram
 
 def num_tokens_from_string(string: str, model: str) -> int:
     encoding = tiktoken.encoding_for_model(model)
