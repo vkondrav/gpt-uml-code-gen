@@ -70,7 +70,7 @@ Do not create sample classes.
 
 """
 
-prompt = "//Kotlin\n\n" + sample_set + rules + diagram
+prompt = "//Kotlin\n\n" + sample_set + rules + "Create classes from the following diagram\n\n" + diagram
 
 def num_tokens_from_string(string: str, model: str) -> int:
     encoding = tiktoken.encoding_for_model(model)
@@ -85,9 +85,13 @@ max_tokens = max_request_tokens - num_tokens
 
 if debug_mode:
     print(f"MAX TOKENS: {max_tokens}")
+    print("\n")
 
 if debug_mode:
+    print("PROMPT")
+    print("-------------------")
     print(prompt)
+    print("\n")
 
 spinner = Halo(text = "Generating Code", spinner = "dots")
 spinner.start()
@@ -101,9 +105,17 @@ response = openai.Completion.create(
 
 spinner.stop()
 
+if debug_mode:
+    print("RESPONSE")
+    print("-------------------")
+    print(response)
+    print("\n")
+
 code_gen = json.loads(response["choices"][0]["text"])
 
 if debug_mode:
+    print("FORMATTED RESPONSE")
+    print("-------------------")
     print(json.dumps(code_gen, indent = 4))
 
 for file in code_gen:
