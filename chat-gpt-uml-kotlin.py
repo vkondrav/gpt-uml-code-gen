@@ -9,7 +9,8 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("-p", "--package", type = str, required = True, help = "package to create")
 parser.add_argument("-s", "--samples", type = str, default = "samples", help = "path to sample files directory")
-parser.add_argument("-dm", "--diagram", type = str, default = "diagram", help = "path to diagram")
+parser.add_argument("-dm", "--diagram", type = str, default = "diagram.txt", help = "path to diagram")
+parser.add_argument("-r", "--rules", type = str, default = "rules.txt", help = "path to rules")
 parser.add_argument("-d", "--debug", action = "store_true", help = "enable debug mode")
 
 args = parser.parse_args()
@@ -17,14 +18,15 @@ args = parser.parse_args()
 package = args.package
 diagram_path = args.diagram
 samples_path = args.samples
+rules_path = args.rules
 debug_mode = args.debug
 
 openai.api_key = os.getenv("OPEN_AI_KEY")
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-with open(diagram_path, "r") as file:
-    diagram = file.read()
+with open(rules_path, "r") as file:
+    rules = file.read()
 
 def get_sample_set(dir_path, rel_path = "", files_info = ""):
     for filename in os.listdir(dir_path):
@@ -39,32 +41,8 @@ def get_sample_set(dir_path, rel_path = "", files_info = ""):
 
 sample_set = get_sample_set(samples_path).replace("sample-package", package)
 
-rules = """
-Koltin File Generator
-
-You are a code genetating machince. I will provide you with a set of sample classes and a diagram and you will output files.
-If I ask for a class to be created you must also create its test class.
-If not one of fragment, viewmodel or repository create a sample class.
-Assume a class has no dependencies unless explicitly stated.
-Do not create sample classes.
-Do not create a class unless specificaified by the diagram.
-Do not add to the diagram.
-
-() denotes a shorthand.
-Example: sampleRepository (SR) means SR now refers to sampleRepository.
-
---> denotes a dependency. 
-Example: sampleViewModel --> sampleRepository means sampleViewModel dependends on sampleRepository. 
-Example: sampleFragment --> sampleViewModel means sampleFragment uses sampleViewModel.
-
-+ denotes create command.
-Example: + sample repository means create a sample repository.
-
-- denotes that a class aleady exists and does not need to be created. it can however be a dependency.
-
-Format the response into a JSON array with a structure [{"file_name": "file_name.kt", "file_path": "file_path", "content": "sample_content"}].
-Your response should only be a valid JSON array string and no other characters.
-"""
+with open(diagram_path, "r") as file:
+    diagram = file.read()
 
 prompt = rules + sample_set + diagram
 
@@ -116,7 +94,7 @@ if debug_mode:
 
 for file in code_gen:
 
-    path = file["file_path"]
+    path = "output/" + file["file_path"]
     name = file["file_name"]
 
     if not os.path.exists(path):
