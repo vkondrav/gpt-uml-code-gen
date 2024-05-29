@@ -7,27 +7,38 @@ client = OpenAI(
   api_key = os.getenv("OPEN_AI_KEY")
 )
 
-teams = ["iOS", "Android", "Backend", "Platform", "QA", "Product", "Design"]
+teams = {
+    "iOS": ["Igar", "Alex", "Jonathan", "Deep", "Chloe"],
+    "Android": ["Rachit", "Naz", "Shubham", "Steven", "Ivan"],
+    "Backend": ["MarcAndre", "Nishad", "Firas", "Chris", "Abdullah"],
+    "Platform": ["Harpeet", "Arshdeep"],
+    "QA": ["Ravi", "Gurdeep"],
+    "Design": ["Tori"]
+}
 
 def get_random_team():
     if teams:
-        random_team = random.choice(teams)
-        teams.remove(random_team)
-        team_label.config(text=random_team)
-        remaining_teams_label.config(text=f"Remaining teams: {', '.join(teams)}")
+        random_team = random.choice(list(teams.keys()))
+        team_names = teams.pop(random_team)
+        print(f"{random_team}: {', '.join(team_names)}")  # print to console
+        team_label.config(text=f"{random_team}: {', '.join(team_names)}")
+        remaining_teams_label.config(text=f"Remaining teams: {', '.join(teams.keys())}")
         get_joke(random_team)
     else:
         team_label.config(text="List is complete. Exiting program.")
         button.config(state='disabled')
 
 def get_joke(team):
-    response = client.completions.create(
-        model="gpt-3.5-turbo-instruct",
-        prompt=f"Tell me a funny joke about the {team} software engineering team. Should in the style of Seinfield standup",
-        temperature=0.5,
-        max_tokens=300
-    )
-    joke_label.config(text=response.choices[0].text.strip())
+
+    prompt = f"Tell me a funny joke about the {team} software engineering team in the style of Seinfield standup. Should be short."
+
+    messages = [{"role": "user", "content": prompt}]
+
+    model = "gpt-3.5-turbo"
+
+    response = client.chat.completions.create(model=model, messages=messages).choices[0].message.content
+
+    joke_label.config(text=response.strip())
 
 def display_team():
     random_team = random.choice(teams)

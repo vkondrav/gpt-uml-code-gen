@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <meta http-equiv="refresh" content="1" >
+        <style>
+            body {
+                display: flex;
+                justify-content: space-between;
+                height: 100vh;
+                font-family: Arial, sans-serif;
+                padding: 0 10%;
+            }
+            .text-content {
+                flex: 2;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+            .play-description {
+                font-size: 1.5em;
+                color: blue;
+                text-align: center;
+            }
+            .response-play {
+                font-size: 2em;
+                color: red;
+                text-align: center;
+            }
+            .mermaid {
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                max-width: 100%;
+                height: auto;
+            }
+        </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script type="text/javascript" src="https://livejs.com/live.js"></script>
+    </head>
+    <body>
+        <div class="text-content">
+            <p class="play-description">${line1}</p>
+            <p class="response-play">${line2}</p>
+        </div>
+        <div class="mermaid">
+            flowchart TD
+                SR1[Sports Radar] -->|Play By Play| GPT[ChatGPT API]
+                SR2[Sports Radar] -->|Roster| GPT[ChatGPT API]
+                SN[Sportsnet] -->|Preview| GPT[ChatGPT API]
+                GPT -->|Commentary| C[Whisper API]
+                C --> D(Audio)
+        </div>
+    </body>
+</html>
